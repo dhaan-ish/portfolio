@@ -1,11 +1,7 @@
-"use client";
 import StatsBar from "@/components/StatsBar";
 import Link from "next/link";
-import { useState } from "react";
 
 export default function Home() {
-  const [avatarActive, setAvatarActive] = useState(false);
-
   return (
     <>
       <main className="relative min-h-screen flex flex-col justify-center items-center overflow-hidden">
@@ -45,11 +41,11 @@ export default function Home() {
               <p className="text-lg text-on-surface-variant max-w-xl leading-relaxed font-light">
                 Specializing in{" "}
                 <span className="text-primary font-medium">
-                  AI Agents &amp; Backend Systems
+                  AI &amp; Full Stack Development
                 </span>{" "}
-                at HID Global Chennai. I focus on scaling backend APIs for AI agents
-                and automating complex workflows by building intelligent agents. I also
-                build memory management tools for agent environments.
+                at HID Global Chennai. I build high-performance distributed
+                systems and neural interfaces that bridge the gap between
+                complex data and intuitive human experiences.
               </p>
             </div>
 
@@ -134,18 +130,13 @@ export default function Home() {
             </div>
 
             {/* Avatar */}
-            <div
-              className="relative w-80 h-80 rounded-full p-2 bg-gradient-to-tr from-primary/50 via-transparent to-secondary/50 overflow-hidden group"
-              onClick={() => setAvatarActive((v) => !v)}
-            >
+            <div className="relative w-80 h-80 rounded-full p-2 bg-gradient-to-tr from-primary/50 via-transparent to-secondary/50 overflow-hidden group">
               <div className="w-full h-full rounded-full bg-surface-container-lowest overflow-hidden flex items-center justify-center border-2 border-primary/20">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   alt="Dhaanish Ahamed"
-                  className={`w-full h-full object-cover transition-all duration-700 hover:grayscale-0 hover:scale-100 ${
-                    avatarActive ? "grayscale-0 scale-100" : "grayscale scale-110"
-                  }`}
-                  src="/profile.png"
+                  className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700 scale-110 group-hover:scale-100"
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuDeX8AHi-E-ZFrd2mbdFI2uFF4867wqEhXMZs_mz21b6gGi23ZTQfLEQuSFX68Tx_pJBhX4lAOLZxaS8rFy4RQqkULYITiT_8_jbfKN3FscOog7t30YcoCdnZwPOuqnbEBqA_vfK88q3QYA_hsL1Lscz4eYiWo1wzPDP7Tgy9f3Ccwdled9B7V41fKQC6npGRByranQ87d6l7T8LBj_t4yLW1QGchVDA42VGkvosFz3L73KyAs2cT5vXg99DBlwL7F4JkIEPlQ6BU0"
                 />
               </div>
             </div>
@@ -155,7 +146,7 @@ export default function Home() {
         {/* Scroll indicator */}
         <div className="absolute bottom-24 flex flex-col items-center gap-2">
           <span className="text-on-surface-variant font-[family-name:var(--font-headline)] text-xs tracking-[0.3em] uppercase">
-            {/* Scroll to explore */}
+            Scroll to explore
           </span>
           <div className="w-px h-12 bg-gradient-to-b from-primary to-transparent" />
         </div>
