@@ -3,7 +3,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const mobileNavLinks = [
-  { label: "Home", href: "/", icon: "home" },
   { label: "Projects", href: "/projects", icon: "code" },
   { label: "Progress", href: "/progress", icon: "trending_up" },
   { label: "Skills", href: "/skills", icon: "psychology" },

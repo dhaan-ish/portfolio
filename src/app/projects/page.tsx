@@ -1,9 +1,12 @@
+"use client";
 import StatsBar from "@/components/StatsBar";
+import { useState } from "react";
 
 const projects = [
   {
     name: "Stylist AI",
     desc: "Intel OneAPI Hackathon Winner - AI-driven fashion app with virtual try-on and personalized recommendations.",
+    category: "AI/ML",
     tags: [
       { label: "React.js", color: "text-primary" },
       { label: "DialogFlow", color: "text-secondary" },
@@ -18,6 +21,7 @@ const projects = [
   {
     name: "Multi-Agent Support",
     desc: "Fully automated e-commerce customer support using multi-agent AI system.",
+    category: "AI/ML",
     tags: [
       { label: "A2A Protocol", color: "text-primary" },
       { label: "Azure OpenAI", color: "text-secondary" },
@@ -32,6 +36,7 @@ const projects = [
   {
     name: "Multi-Agent Data Analysis",
     desc: "Multi-agent data analysis system using A2A protocol, Azure OpenAI, and MCP for CSV and SQL insights.",
+    category: "Tools",
     tags: [
       { label: "A2A Protocol", color: "text-primary" },
       { label: "Azure OpenAI", color: "text-secondary" },
@@ -48,6 +53,7 @@ const projects = [
   {
     name: "Liveness Detection on Edge",
     desc: "Real-time browser-based liveness detection with optimized ML models.",
+    category: "AI/ML",
     tags: [
       { label: "TensorFlow.js", color: "text-primary" },
       { label: "ONNX", color: "text-secondary" },
@@ -62,6 +68,7 @@ const projects = [
   {
     name: "WizAI",
     desc: "Mobile app for traveling doctors to manage patient data efficiently.",
+    category: "Web Dev",
     tags: [
       { label: "React Native", color: "text-primary" },
       { label: "Flask", color: "text-secondary" },
@@ -76,6 +83,7 @@ const projects = [
   {
     name: "StockWiz",
     desc: "Intelligent stock market analysis tool providing real-time predictive modeling for retail investors.",
+    category: "Tools",
     tags: [
       { label: "Python", color: "text-primary" },
       { label: "ML", color: "text-tertiary" },
@@ -88,6 +96,13 @@ const projects = [
 const filters = ["All", "AI/ML", "Web Dev", "Tools"];
 
 export default function ProjectsPage() {
+  const [activeFilter, setActiveFilter] = useState("All");
+
+  const filteredProjects =
+    activeFilter === "All"
+      ? projects
+      : projects.filter((p) => p.category === activeFilter);
+
   return (
     <>
       <div className="grid-overlay" />
@@ -105,11 +120,12 @@ export default function ProjectsPage() {
 
         {/* Filters */}
         <div className="flex flex-wrap gap-3 mb-12">
-          {filters.map((filter, i) => (
+          {filters.map((filter) => (
             <button
               key={filter}
+              onClick={() => setActiveFilter(filter)}
               className={`px-6 py-2 rounded-full text-sm font-semibold border transition-all ${
-                i === 0
+                activeFilter === filter
                   ? "bg-primary-container/15 border-primary-container/40 text-primary-container"
                   : "border-white/10 text-on-surface-variant hover:bg-white/5"
               }`}
@@ -121,7 +137,7 @@ export default function ProjectsPage() {
 
         {/* Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {projects.map((project) => (
+          {filteredProjects.map((project) => (
             <div
               key={project.name}
               className="glass-card flex flex-col h-full rounded-xl overflow-hidden"

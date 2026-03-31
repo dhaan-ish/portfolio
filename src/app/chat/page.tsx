@@ -3,6 +3,8 @@
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
 import { useState, useRef, useEffect } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 const suggestions = [
   "Tell me about Stylist AI project",
@@ -16,6 +18,7 @@ const quickChips = ["Skills overview", "GitHub stats", "Contact info", "Recent w
 export default function ChatPage() {
   const [input, setInput] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const pathname = usePathname();
 
   const { messages, sendMessage, status, setMessages } = useChat({
     transport: new DefaultChatTransport({
@@ -50,7 +53,9 @@ export default function ChatPage() {
   };
 
   return (
-    <div className="flex h-screen overflow-hidden pt-[73px]">
+    <>
+      <div className="grid-overlay" />
+      <div className="flex h-screen overflow-hidden pt-[73px]">
       {/* Left Sidebar */}
       <aside className="hidden lg:flex flex-col h-full w-64 bg-surface-container-lowest border-r border-outline-variant/20 p-4 shrink-0">
         <div className="flex items-center gap-3 mb-8">
@@ -65,33 +70,37 @@ export default function ChatPage() {
         <div className="flex-1 space-y-2">
           <div className="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-4 px-2">Core Modules</div>
           {[
-            { icon: "analytics", label: "System Info", active: true },
-            { icon: "memory", label: "AI Status", active: false },
-            { icon: "lan", label: "Network", active: false },
-            { icon: "terminal", label: "Logs", active: false },
-          ].map((item) => (
-            <button
-              key={item.label}
-              className={`flex items-center gap-3 p-3 rounded w-full text-left transition-all duration-300 ${
-                item.active
-                  ? "text-primary-container bg-primary-container/10 border-l-4 border-primary-container"
-                  : "text-on-surface-variant hover:text-on-surface hover:bg-white/5"
-              }`}
-            >
-              <span className="material-symbols-outlined text-sm">{item.icon}</span>
-              <span className="text-xs font-medium">{item.label}</span>
-            </button>
-          ))}
+            { icon: "analytics", label: "System Info", href: "/chat" },
+            { icon: "memory", label: "AI Status", href: "/chat/ai-status" },
+            { icon: "lan", label: "Network", href: "/chat/network" },
+            { icon: "terminal", label: "Logs", href: "/chat/logs" },
+          ].map((item) => {
+            const isActive = pathname === item.href;
+            return (
+              <Link
+                key={item.label}
+                href={item.href}
+                className={`flex items-center gap-3 p-3 rounded w-full text-left transition-all duration-300 ${
+                  isActive
+                    ? "text-primary-container bg-primary-container/10 border-l-4 border-primary-container"
+                    : "text-on-surface-variant hover:text-on-surface hover:bg-white/5"
+                }`}
+              >
+                <span className="material-symbols-outlined text-sm">{item.icon}</span>
+                <span className="text-xs font-medium">{item.label}</span>
+              </Link>
+            );
+          })}
         </div>
         <div className="mt-auto pt-4 border-t border-outline-variant/10 space-y-1">
-          <button className="flex items-center gap-3 p-2 text-on-surface-variant hover:text-on-surface text-xs w-full">
+          <Link href="/chat/settings" className="flex items-center gap-3 p-2 text-on-surface-variant hover:text-on-surface text-xs w-full">
             <span className="material-symbols-outlined text-sm">settings</span>
             <span>Settings</span>
-          </button>
-          <button className="flex items-center gap-3 p-2 text-on-surface-variant hover:text-on-surface text-xs w-full">
+          </Link>
+          <Link href="/chat/support" className="flex items-center gap-3 p-2 text-on-surface-variant hover:text-on-surface text-xs w-full">
             <span className="material-symbols-outlined text-sm">help</span>
             <span>Support</span>
-          </button>
+          </Link>
         </div>
       </aside>
 
@@ -258,5 +267,6 @@ export default function ChatPage() {
         </div>
       </aside>
     </div>
+    </>
   );
 }
