@@ -13,34 +13,37 @@ const projects = [
       { label: "Machine Learning", color: "text-tertiary" },
     ],
     image: "/projects/stylist-ai.png",
-    url: "#",
+    url: "https://github.com/dhaan-ish/wizzers",
   },
   {
     name: "Multi-Agent Support",
     desc: "Fully automated e-commerce customer support using multi-agent AI system.",
     tags: [
-      { label: "Python", color: "text-primary" },
+      { label: "A2A Protocol", color: "text-primary" },
       { label: "Azure OpenAI", color: "text-secondary" },
+      { label: "Python", color: "text-primary" },
       { label: "MCP", color: "text-tertiary" },
       { label: "Gmail API", color: "text-primary" },
       { label: "Multi-Agent Systems", color: "text-secondary" },
     ],
     image: "/projects/multi-agent.png",
-    url: "#",
+    url: "https://github.com/dhaan-ish/multi-agent-support",
   },
   {
-    name: "CSV MCP Server",
-    desc: "MCP server for CSV analysis with LLM-generated insights and visualizations.",
+    name: "Multi-Agent Data Analysis",
+    desc: "Multi-agent data analysis system using A2A protocol, Azure OpenAI, and MCP for CSV and SQL insights.",
     tags: [
+      { label: "A2A Protocol", color: "text-primary" },
+      { label: "Azure OpenAI", color: "text-secondary" },
       { label: "Python", color: "text-primary" },
-      { label: "FastMCP", color: "text-tertiary" },
+      { label: "Multi-Agent", color: "text-tertiary" },
       { label: "Pandas", color: "text-secondary" },
       { label: "Plotly", color: "text-primary" },
       { label: "NumPy", color: "text-tertiary" },
       { label: "LLM", color: "text-secondary" },
     ],
-    image: "/projects/csv-mcp.png",
-    url: "#",
+    image: "/projects/multi-agent-data.png",
+    url: "https://github.com/dhaan-ish/multi-agent-data-analysis",
   },
   {
     name: "Liveness Detection on Edge",
@@ -54,7 +57,7 @@ const projects = [
       { label: "CNN", color: "text-tertiary" },
     ],
     image: "/projects/liveness.png",
-    url: "#",
+    url: "https://github.com/dhaan-ish/liveness-detection",
   },
   {
     name: "WizAI",
@@ -68,7 +71,7 @@ const projects = [
       { label: "AI", color: "text-tertiary" },
     ],
     image: "/projects/wizai.png",
-    url: "#",
+    url: "https://github.com/dhaan-ish/wizai",
   },
   {
     name: "StockWiz",
@@ -87,6 +90,7 @@ const filters = ["All", "AI/ML", "Web Dev", "Tools"];
 export default function ProjectsPage() {
   return (
     <>
+      <div className="grid-overlay" />
       <main className="pt-32 pb-24 px-6 md:px-12 max-w-[1440px] mx-auto">
         <header className="mb-16">
           <h1 className="font-[family-name:var(--font-headline)] text-5xl md:text-6xl font-black text-primary inline-block glow-underline">

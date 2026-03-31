@@ -5,8 +5,10 @@ import { usePathname } from "next/navigation";
 const mobileNavLinks = [
   { label: "Home", href: "/", icon: "home" },
   { label: "Projects", href: "/projects", icon: "code" },
+  { label: "Progress", href: "/progress", icon: "trending_up" },
   { label: "Skills", href: "/skills", icon: "psychology" },
   { label: "Experience", href: "/experience", icon: "work" },
+  { label: "Contact", href: "/contact", icon: "mail" },
 ];
 
 export default function StatsBar() {

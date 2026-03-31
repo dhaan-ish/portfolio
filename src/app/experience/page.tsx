@@ -3,6 +3,7 @@ import StatsBar from "@/components/StatsBar";
 export default function ExperiencePage() {
   return (
     <>
+      <div className="grid-overlay" />
       <main className="pt-24 pb-32 px-6 md:px-12 max-w-[1440px] mx-auto">
         {/* ===== EXPERIENCE SECTION ===== */}
         <header className="mb-16">
@@ -126,6 +127,55 @@ export default function ExperiencePage() {
           </div>
         </div>
 
+        {/* ===== ACHIEVEMENTS SECTION ===== */}
+        <header className="mb-16">
+          <h2 className="font-[family-name:var(--font-headline)] text-5xl md:text-7xl font-black tracking-tighter text-primary mb-4">
+            ACHIEVEMENTS
+          </h2>
+          <div className="w-32 h-1.5 bg-secondary-container shadow-[0_0_15px_rgba(96,1,209,0.8)]" />
+        </header>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-32 max-w-5xl">
+          {/* Intel OneAPI */}
+          <div className="bg-surface-container-low p-8 rounded-xl border border-white/5 hover:border-primary/30 transition-all duration-300 group">
+            <div className="w-14 h-14 bg-primary/10 rounded-xl flex items-center justify-center mb-6 group-hover:shadow-[0_0_20px_rgba(0,212,255,0.3)] transition-all">
+              <span className="material-symbols-outlined text-primary text-3xl">emoji_events</span>
+            </div>
+            <h3 className="font-[family-name:var(--font-headline)] text-xl font-bold text-on-surface mb-2">Intel OneAPI AI/ML Hackathon</h3>
+            <p className="text-tertiary font-bold text-sm mb-3">Mar 2024</p>
+            <span className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 border border-primary/20 rounded-lg">
+              <span className="material-symbols-outlined text-primary text-lg">military_tech</span>
+              <span className="font-[family-name:var(--font-headline)] font-bold text-primary">Winner</span>
+            </span>
+          </div>
+
+          {/* Amazon ML Challenge */}
+          <div className="bg-surface-container-low p-8 rounded-xl border border-white/5 hover:border-secondary/30 transition-all duration-300 group">
+            <div className="w-14 h-14 bg-secondary/10 rounded-xl flex items-center justify-center mb-6 group-hover:shadow-[0_0_20px_rgba(96,1,209,0.3)] transition-all">
+              <span className="material-symbols-outlined text-secondary text-3xl">emoji_events</span>
+            </div>
+            <h3 className="font-[family-name:var(--font-headline)] text-xl font-bold text-on-surface mb-2">Amazon ML Challenge 2024</h3>
+            <p className="text-tertiary font-bold text-sm mb-3">Oct 2024</p>
+            <span className="inline-flex items-center gap-2 px-4 py-2 bg-secondary/10 border border-secondary/20 rounded-lg">
+              <span className="material-symbols-outlined text-secondary text-lg">leaderboard</span>
+              <span className="font-[family-name:var(--font-headline)] font-bold text-secondary">AIR 74</span>
+            </span>
+          </div>
+
+          {/* TCS Codevita */}
+          <div className="bg-surface-container-low p-8 rounded-xl border border-white/5 hover:border-tertiary/30 transition-all duration-300 group">
+            <div className="w-14 h-14 bg-tertiary/10 rounded-xl flex items-center justify-center mb-6 group-hover:shadow-[0_0_20px_rgba(106,247,186,0.3)] transition-all">
+              <span className="material-symbols-outlined text-tertiary text-3xl">emoji_events</span>
+            </div>
+            <h3 className="font-[family-name:var(--font-headline)] text-xl font-bold text-on-surface mb-2">TCS Codevita</h3><br />
+            <p className="text-tertiary font-bold text-sm mb-3">Jan 2025</p>
+            <span className="inline-flex items-center gap-2 px-4 py-2 bg-tertiary/10 border border-tertiary/20 rounded-lg">
+              <span className="material-symbols-outlined text-tertiary text-lg">public</span>
+              <span className="font-[family-name:var(--font-headline)] font-bold text-tertiary">World Rank 1296</span>
+            </span>
+          </div>
+        </div>
+
         {/* ===== EDUCATION SECTION ===== */}
         <header className="mb-16">
           <h2 className="font-[family-name:var(--font-headline)] text-5xl md:text-7xl font-black tracking-tighter text-primary mb-4">
@@ -146,9 +196,15 @@ export default function ExperiencePage() {
                   <h3 className="font-[family-name:var(--font-headline)] text-2xl font-bold text-on-surface">Chennai Institute of Technology</h3>
                   <p className="text-on-surface-variant text-sm mb-2">Bachelor of Technology – BTech, Artificial Intelligence and Data Science</p>
                   <p className="text-tertiary text-sm uppercase tracking-wider mb-4">2022 – 2026</p>
-                  <div className="inline-flex items-center gap-2 px-4 py-2 bg-tertiary/10 border border-tertiary/20 rounded-lg">
-                    <span className="material-symbols-outlined text-tertiary text-lg">grade</span>
-                    <span className="font-[family-name:var(--font-headline)] font-bold text-tertiary text-lg">CGPA: 9.45</span>
+                  <div className="flex flex-wrap gap-4">
+                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-tertiary/10 border border-tertiary/20 rounded-lg">
+                      <span className="material-symbols-outlined text-tertiary text-lg">grade</span>
+                      <span className="font-[family-name:var(--font-headline)] font-bold text-tertiary text-lg">CGPA: 9.45</span>
+                    </div>
+                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-secondary/10 border border-secondary/20 rounded-lg">
+                      <span className="material-symbols-outlined text-secondary text-lg">military_tech</span>
+                      <span className="font-[family-name:var(--font-headline)] font-bold text-secondary text-lg">GATE 2026 AIR 3367</span>
+                    </div>
                   </div>
                 </div>
               </div>

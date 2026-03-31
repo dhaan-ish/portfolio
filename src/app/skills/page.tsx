@@ -4,7 +4,7 @@ const skillCategories = [
   {
     icon: "psychology",
     title: "AI / Machine Learning",
-    skills: ["TensorFlow", "PyTorch", "Computer Vision", "NLP", "LLMs", "Jupyter"],
+    skills: ["TensorFlow", "PyTorch", "Computer Vision", "NLP", "LLMs", "Jupyter", "A2A Protocol", "Azure OpenAI", "MCP Servers", "AWS Bedrock"],
   },
   {
     icon: "code",
@@ -36,6 +36,7 @@ const skillCategories = [
 export default function SkillsPage() {
   return (
     <>
+      <div className="grid-overlay" />
       <main className="pt-24 pb-32 px-6 md:px-12 max-w-[1440px] mx-auto">
         <header className="mb-16">
           <h1 className="font-[family-name:var(--font-headline)] text-5xl md:text-7xl font-black tracking-tighter text-primary mb-4">

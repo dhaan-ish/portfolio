@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Neural.Stats // System Performance</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "inverse-on-surface": "#283044",
+              "primary-fixed-dim": "#3cd7ff",
+              "outline": "#859398",
+              "on-error-container": "#ffdad6",
+              "secondary": "#d2bbff",
+              "surface-dim": "#0b1326",
+              "on-secondary-fixed": "#25005a",
+              "tertiary-container": "#49da9f",
+              "on-tertiary-container": "#005c3e",
+              "on-surface": "#dae2fd",
+              "on-tertiary-fixed": "#002113",
+              "tertiary-fixed-dim": "#4edea3",
+              "surface-container-highest": "#2d3449",
+              "inverse-surface": "#dae2fd",
+              "secondary-fixed": "#eaddff",
+              "on-tertiary-fixed-variant": "#005236",
+              "on-background": "#dae2fd",
+              "error": "#ffb4ab",
+              "surface": "#0b1326",
+              "on-primary-fixed": "#001f27",
+              "on-secondary": "#3f008e",
+              "background": "#0b1326",
+              "on-secondary-container": "#c9aeff",
+              "on-error": "#690005",
+              "surface-container-low": "#131b2e",
+              "on-primary-container": "#00586b",
+              "surface-container": "#171f33",
+              "inverse-primary": "#00677e",
+              "tertiary": "#6af7ba",
+              "on-primary": "#003642",
+              "primary": "#a8e8ff",
+              "surface-container-high": "#222a3d",
+              "secondary-fixed-dim": "#d2bbff",
+              "tertiary-fixed": "#6ffbbe",
+              "surface-bright": "#31394d",
+              "secondary-container": "#6001d1",
+              "on-tertiary": "#003824",
+              "surface-container-lowest": "#060e20",
+              "on-primary-fixed-variant": "#004e5f",
+              "error-container": "#93000a",
+              "on-secondary-fixed-variant": "#5a00c6",
+              "surface-variant": "#2d3449",
+              "on-surface-variant": "#bbc9cf",
+              "primary-fixed": "#b4ebff",
+              "primary-container": "#00d4ff",
+              "outline-variant": "#3c494e",
+              "surface-tint": "#3cd7ff"
+            },
+            fontFamily: {
+              "headline": ["Space Grotesk"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      .glass-panel {
+        background: rgba(23, 31, 51, 0.6);
+        backdrop-filter: blur(12px);
+      }
+      .glow-primary {
+        box-shadow: 0 0 15px rgba(0, 212, 255, 0.15);
+      }
+      .status-ping {
+        position: relative;
+      }
+      .status-ping::after {
+        content: '';
+        position: absolute;
+        width: 8px;
+        height: 8px;
+        background: #6af7ba;
+        border-radius: 50%;
+        box-shadow: 0 0 8px #6af7ba;
+      }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body selection:bg-primary-container selection:text-on-primary-container">
+<!-- TopNavBar -->
+<header class="fixed top-0 w-full z-50 bg-slate-950/60 backdrop-blur-xl border-b border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.5)]">
+<nav class="flex justify-between items-center px-6 h-16 w-full max-w-screen-2xl mx-auto">
+<div class="flex items-center gap-8">
+<span class="text-2xl font-bold tracking-tighter text-cyan-400 drop-shadow-[0_0_8px_rgba(0,212,255,0.4)] font-headline">Neural.Stats</span>
+<div class="hidden md:flex items-center gap-6">
+<a class="text-cyan-400 border-b-2 border-cyan-400 pb-1 font-headline tracking-tight text-sm" href="#">Dashboard</a>
+<a class="text-slate-400 hover:text-slate-200 transition-colors font-headline tracking-tight text-sm" href="#">Metrics</a>
+<a class="text-slate-400 hover:text-slate-200 transition-colors font-headline tracking-tight text-sm" href="#">Archive</a>
+<a class="text-slate-400 hover:text-slate-200 transition-colors font-headline tracking-tight text-sm" href="#">Settings</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 hover:bg-white/5 transition-all duration-300 rounded-lg text-slate-400 hover:text-cyan-400 scale-95 active:scale-90">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="p-2 hover:bg-white/5 transition-all duration-300 rounded-lg text-slate-400 hover:text-cyan-400 scale-95 active:scale-90">
+<span class="material-symbols-outlined">terminal</span>
+</button>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-white/10 ml-2">
+<img alt="User Profile Avatar" data-alt="Professional close-up portrait of a tech professional with soft blue ambient studio lighting and dark background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBt1rKb12AOCYHmkNN7QbFhWrFko4vZrTLOIHXV7-uC32zk2ak2wJOqZXmpSKg3RJW5T2Jdsv0EBfKzT47lraB72VPfy1KXllXAtCm5jnpX0oNEAQ4HdeDqDnq85pcWOhbvJ_-Sze0RrNxR3mR40D0c7HG50CIHbuOq-q5FNacv-l6OXoXzXchxXWDfGeGusYGlxjvGXwArRVI0yfGKqJFXH3oqOjMUymvsDIggi6T_Nf4Zx8l6D9rMxpSNtgZteF9wbfW5OGVCNyY"/>
+</div>
+</div>
+</nav>
+</header>
+<main class="pt-24 pb-24 px-6 max-w-7xl mx-auto">
+<!-- Main Headline -->
+<div class="mb-12">
+<div class="flex items-center gap-3 mb-2">
+<span class="w-2 h-2 rounded-full bg-tertiary animate-pulse shadow-[0_0_8px_#6af7ba]"></span>
+<span class="text-tertiary font-mono text-xs tracking-widest uppercase">Status: Live Feed</span>
+</div>
+<h1 class="text-4xl md:text-6xl font-headline font-bold tracking-tighter text-primary drop-shadow-[0_0_12px_rgba(168,232,255,0.3)]">
+                SYSTEM_METRICS: <span class="text-on-surface">CODING_PERFORMANCE</span>
+</h1>
+</div>
+<!-- GitHub Activity Heatmap Section -->
+<section class="mb-8 p-6 glass-panel rounded-xl border border-white/5 glow-primary">
+<div class="flex justify-between items-center mb-6">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-cyan-400">code</span>
+<h2 class="font-headline font-bold text-xl tracking-tight">GitHub Contribution Flow</h2>
+</div>
+<div class="text-on-surface-variant font-mono text-xs">Yearly Activity: 2,492 Commits</div>
+</div>
+<div class="overflow-x-auto pb-4">
+<div class="flex gap-1 min-w-[800px]">
+<!-- Simulated Heatmap Grid -->
+<div class="grid grid-flow-col grid-rows-7 gap-1 w-full">
+<!-- Generating 52 weeks of contributions using varied opacities of cyan -->
+<!-- This is a representative sample of cells -->
+<div class="w-3 h-3 rounded-sm bg-slate-800"></div>
+<div class="w-3 h-3 rounded-sm bg-cyan-900/40"></div>
+<div class="w-3 h-3 rounded-sm bg-cyan-700/60"></div>
+<div class="w-3 h-3 rounded-sm bg-cyan-500"></div>
+<div class="w-3 h-3 rounded-sm bg-cyan-400 shadow-[0_0_5px_rgba(0,212,255,0.4)]"></div>
+<!-- ... repeated visual pattern ... -->
+<script>
+                            const grid = document.currentScript.parentElement;
+                            const colors = ['bg-slate-800', 'bg-cyan-950', 'bg-cyan-900', 'bg-cyan-700', 'bg-cyan-500', 'bg-cyan-400'];
+                            for(let i=0; i<360; i++) {
+                                const div = document.createElement('div');
+                                div.className = `w-3 h-3 rounded-sm ${colors[Math.floor(Math.random() * colors.length)]}`;
+                                grid.appendChild(div);
+                            }
+                        </script>
+</div>
+</div>
+</div>
+<div class="flex justify-between items-center mt-4 text-[10px] font-mono text-slate-500 uppercase tracking-widest">
+<span>Jan 2023</span>
+<span>Dec 2023</span>
+</div>
+</section>
+<!-- Terminal Cards Grid -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- LeetCode Card -->
+<article class="glass-panel p-6 rounded-xl border border-white/5 group hover:border-cyan-500/30 transition-all duration-500">
+<div class="flex justify-between items-start mb-8">
+<div>
+<span class="text-xs font-mono text-tertiary mb-1 block">MODULE_01</span>
+<h3 class="font-headline font-bold text-2xl text-on-surface">LeetCode</h3>
+</div>
+<span class="material-symbols-outlined text-cyan-400 text-3xl">terminal</span>
+</div>
+<div class="flex items-center gap-6 mb-8">
+<div class="relative w-24 h-24 flex items-center justify-center">
+<!-- Custom Donut Chart SVG -->
+<svg class="w-full h-full -rotate-90">
+<circle class="text-slate-800" cx="48" cy="48" fill="transparent" r="40" stroke="currentColor" stroke-width="8"></circle>
+<circle class="text-cyan-400 drop-shadow-[0_0_4px_#00d4ff]" cx="48" cy="48" fill="transparent" r="40" stroke="currentColor" stroke-dasharray="251" stroke-dashoffset="60" stroke-width="8"></circle>
+<circle class="text-tertiary" cx="48" cy="48" fill="transparent" r="40" stroke="currentColor" stroke-dasharray="251" stroke-dashoffset="180" stroke-width="8"></circle>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center">
+<span class="font-headline font-bold text-xl leading-none">450+</span>
+<span class="text-[8px] font-mono uppercase text-slate-500">Solved</span>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-cyan-400"></div>
+<span class="text-xs font-mono text-on-surface-variant">HARD: 45</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-tertiary"></div>
+<span class="text-xs font-mono text-on-surface-variant">MED: 215</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-slate-500"></div>
+<span class="text-xs font-mono text-on-surface-variant">EASY: 190</span>
+</div>
+</div>
+</div>
+<div class="bg-surface-container-low p-4 rounded border border-white/5">
+<div class="flex justify-between items-center">
+<span class="text-[10px] font-mono text-slate-500 uppercase">Global Ranking</span>
+<span class="text-cyan-400 font-headline font-bold">TOP 5%</span>
+</div>
+</div>
+</article>
+<!-- CodeChef Card -->
+<article class="glass-panel p-6 rounded-xl border border-white/5 group hover:border-cyan-500/30 transition-all duration-500">
+<div class="flex justify-between items-start mb-8">
+<div>
+<span class="text-xs font-mono text-tertiary mb-1 block">MODULE_02</span>
+<h3 class="font-headline font-bold text-2xl text-on-surface">CodeChef</h3>
+</div>
+<span class="material-symbols-outlined text-cyan-400 text-3xl">workspace_premium</span>
+</div>
+<div class="mb-8">
+<div class="flex items-baseline gap-2 mb-2">
+<span class="text-5xl font-headline font-bold text-primary tracking-tighter">4★</span>
+<span class="text-on-surface-variant font-mono text-sm tracking-widest uppercase">Division 1</span>
+</div>
+<div class="w-full h-1 bg-slate-800 rounded-full overflow-hidden">
+<div class="w-[75%] h-full bg-gradient-to-r from-primary-container to-on-secondary rounded-full"></div>
+</div>
+<p class="mt-4 text-xs font-mono text-on-surface-variant leading-relaxed">
+                        Currently ranked in the upper echelons of competitive algorithmic performance.
+                    </p>
+</div>
+<div class="grid grid-cols-2 gap-3">
+<div class="bg-surface-container-low p-3 rounded border border-white/5">
+<span class="text-[9px] font-mono text-slate-500 block uppercase mb-1">Global</span>
+<span class="text-on-surface font-headline font-bold text-sm">#1,429</span>
+</div>
+<div class="bg-surface-container-low p-3 rounded border border-white/5">
+<span class="text-[9px] font-mono text-slate-500 block uppercase mb-1">Country</span>
+<span class="text-on-surface font-headline font-bold text-sm">#482</span>
+</div>
+</div>
+</article>
+<!-- CodeForces Card -->
+<article class="glass-panel p-6 rounded-xl border border-white/5 group hover:border-cyan-500/30 transition-all duration-500">
+<div class="flex justify-between items-start mb-8">
+<div>
+<span class="text-xs font-mono text-tertiary mb-1 block">MODULE_03</span>
+<h3 class="font-headline font-bold text-2xl text-on-surface">CodeForces</h3>
+</div>
+<span class="material-symbols-outlined text-cyan-400 text-3xl">analytics</span>
+</div>
+<div class="mb-8 space-y-4">
+<div>
+<span class="text-[10px] font-mono text-slate-500 uppercase tracking-widest block mb-1">Current Rating</span>
+<div class="text-3xl font-headline font-bold text-cyan-400">Specialist</div>
+<div class="text-lg font-mono text-primary-fixed-dim">1458</div>
+</div>
+<div class="flex items-center gap-6">
+<div>
+<span class="text-[9px] font-mono text-slate-500 uppercase block">Max Rating</span>
+<span class="text-on-surface font-headline font-bold">1590</span>
+</div>
+<div class="h-8 w-px bg-white/10"></div>
+<div>
+<span class="text-[9px] font-mono text-slate-500 uppercase block">Contests</span>
+<span class="text-on-surface font-headline font-bold">84</span>
+</div>
+</div>
+</div>
+<div class="relative h-20 w-full overflow-hidden rounded bg-slate-900/50 p-2">
+<!-- Mini Graph Placeholder -->
+<div class="absolute bottom-0 left-0 w-full h-full flex items-end gap-[2px] opacity-40">
+<div class="w-1 bg-cyan-400/30" style="height: 40%"></div>
+<div class="w-1 bg-cyan-400/40" style="height: 55%"></div>
+<div class="w-1 bg-cyan-400/30" style="height: 45%"></div>
+<div class="w-1 bg-cyan-400/50" style="height: 70%"></div>
+<div class="w-1 bg-cyan-400/60" style="height: 65%"></div>
+<div class="w-1 bg-cyan-400/80" style="height: 85%"></div>
+<div class="w-1 bg-cyan-400" style="height: 75%"></div>
+</div>
+<span class="relative z-10 text-[9px] font-mono text-cyan-400/80">RATING_ARC_FLOW</span>
+</div>
+</article>
+</div>
+<!-- Featured Project Hero Section (Asymmetric) -->
+<section class="mt-12 grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
+<div class="md:col-span-7">
+<div class="relative rounded-xl overflow-hidden shadow-2xl border border-white/10 group">
+<img alt="Cybersecurity interface" class="w-full aspect-video object-cover transition-transform duration-700 group-hover:scale-110" data-alt="Futuristic digital interface with blue data streams, floating code elements, and complex geometric grids in dark environment" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD7gmKhGEalDU5IB3qj6z6glFuPuI6wTyBrHeVLh66prCxX0cdWs2feIv8P83mY2lr4ttCEt_Ccd0zdEARi4DSZPcv-3f2KAEEmu-0abPvT1MyQiiAf1-dy2WE5zeKXXWBkQEVpd7AA6jP1WRZKHPMv6zI7F5cjttPDbFIhB0YffmXtd1Z5kb9ZsjPVW9rOhf9bxcceNX7IslZ4_XJoRi5r7t4uh1FQOaDWk1HpWmwHhkIVsuVYtJoWmAQ8kElzGokognZhZctUZ8k"/>
+<div class="absolute inset-0 bg-gradient-to-t from-surface via-transparent to-transparent"></div>
+<div class="absolute bottom-6 left-6 flex gap-2">
+<span class="px-3 py-1 bg-primary/20 backdrop-blur-md border border-primary/30 rounded text-[10px] font-mono text-primary uppercase">Core_System</span>
+<span class="px-3 py-1 bg-tertiary/20 backdrop-blur-md border border-tertiary/30 rounded text-[10px] font-mono text-tertiary uppercase">Active</span>
+</div>
+</div>
+</div>
+<div class="md:col-span-5 space-y-6">
+<h2 class="text-3xl font-headline font-bold text-on-surface tracking-tight leading-tight">
+                    INTELLIGENT_AUTOMATION:<br/>
+<span class="text-primary-container">NEURAL_DASHBOARD_V4</span>
+</h2>
+<p class="text-on-surface-variant leading-relaxed">
+                    A multi-threaded processing environment designed for real-time statistical analysis. Integrating global platform APIs into a single cohesive command interface.
+                </p>
+<div class="flex gap-4">
+<button class="px-6 py-3 bg-gradient-to-br from-primary-container to-on-secondary rounded-lg font-headline font-bold text-sm tracking-tight hover:shadow-[0_0_20px_rgba(0,212,255,0.4)] transition-all duration-300">
+                        ACCESS_SOURCE
+                    </button>
+<button class="px-6 py-3 border border-outline-variant/30 rounded-lg font-headline font-bold text-sm text-primary tracking-tight hover:bg-white/5 transition-all">
+                        VIEW_LOGS
+                    </button>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full h-16 flex justify-around items-center px-4 bg-slate-900/80 backdrop-blur-lg z-50 rounded-t-xl shadow-[0_-4px_20px_rgba(0,0,0,0.6)]">
+<a class="flex flex-col items-center justify-center text-cyan-400 bg-cyan-500/10 rounded-xl px-4 py-1 shadow-[0_0_15px_rgba(0,212,255,0.2)] animate-pulse-subtle" href="#">
+<span class="material-symbols-outlined">code</span>
+<span class="font-['Inter'] text-[10px] uppercase tracking-widest mt-1">GitHub</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-500 hover:text-slate-300" href="#">
+<span class="material-symbols-outlined">terminal</span>
+<span class="font-['Inter'] text-[10px] uppercase tracking-widest mt-1">LeetCode</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-500 hover:text-slate-300" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">workspace_premium</span>
+<span class="font-['Inter'] text-[10px] uppercase tracking-widest mt-1">CodeChef</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-500 hover:text-slate-300" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-['Inter'] text-[10px] uppercase tracking-widest mt-1">CodeForces</span>
+</a>
+</nav>
+<!-- Footer -->
+<footer class="w-full py-8 border-t border-white/5 bg-slate-950 mt-12">
+<div class="flex flex-col md:flex-row justify-between items-center px-8 max-w-7xl mx-auto gap-4">
+<div class="text-emerald-500 font-bold font-mono text-xs">
+                SYSTEM_STATUS: <span class="text-emerald-400">OPTIMIZED</span> // 2024 NEURAL_INTERFACE
+            </div>
+<div class="flex gap-8">
+<a class="text-slate-600 hover:text-emerald-300 transition-colors font-mono text-xs" href="#">API_DOCS</a>
+<a class="text-slate-600 hover:text-emerald-300 transition-colors font-mono text-xs" href="#">SOURCE_CODE</a>
+<a class="text-slate-600 hover:text-emerald-300 transition-colors font-mono text-xs" href="#">SYSTEM_LOGS</a>
+</div>
+</div>
+</footer>
+</body></html>
