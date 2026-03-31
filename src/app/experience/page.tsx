@@ -184,7 +184,8 @@ export default function ExperiencePage() {
           <div className="w-32 h-1.5 bg-tertiary shadow-[0_0_15px_rgba(106,247,186,0.8)]" />
         </header>
 
-        <div className="relative pl-8 border-l-2 border-tertiary/30 max-w-4xl">
+        <div className="relative pl-8 border-l-2 border-tertiary/30 max-w-4xl space-y-12">
+          {/* BTech */}
           <div className="relative">
             <div className="absolute -left-[2.55rem] top-0 w-4 h-4 rounded-full bg-tertiary border-4 border-surface shadow-[0_0_10px_#6af7ba]" />
             <div className="bg-surface-container-low p-8 rounded-xl border border-white/5">
@@ -205,6 +206,48 @@ export default function ExperiencePage() {
                       <span className="material-symbols-outlined text-secondary text-lg">military_tech</span>
                       <span className="font-[family-name:var(--font-headline)] font-bold text-secondary text-lg">GATE 2026 AIR 3367</span>
                     </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* HSC */}
+          <div className="relative">
+            <div className="absolute -left-[2.55rem] top-0 w-4 h-4 rounded-full bg-surface-container-highest border-4 border-surface" />
+            <div className="bg-surface-container-low p-8 rounded-xl border border-white/5">
+              <div className="flex items-start gap-6">
+                <div className="w-16 h-16 bg-white/10 rounded-lg flex items-center justify-center shrink-0 border border-white/10">
+                  <span className="material-symbols-outlined text-secondary text-4xl">menu_book</span>
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-[family-name:var(--font-headline)] text-2xl font-bold text-on-surface">Higher Secondary Certificate (HSC)</h3>
+                  <p className="text-on-surface-variant text-sm mb-2">Tamil Nadu State Board — PCMB Stream</p>
+                  <p className="text-tertiary text-sm uppercase tracking-wider mb-4">2021 – 2022</p>
+                  <div className="inline-flex items-center gap-2 px-4 py-2 bg-secondary/10 border border-secondary/20 rounded-lg">
+                    <span className="material-symbols-outlined text-secondary text-lg">workspace_premium</span>
+                    <span className="font-[family-name:var(--font-headline)] font-bold text-secondary text-lg">93.3%</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* SSLC */}
+          <div className="relative">
+            <div className="absolute -left-[2.55rem] top-0 w-4 h-4 rounded-full bg-surface-container-highest border-4 border-surface" />
+            <div className="bg-surface-container-low p-8 rounded-xl border border-white/5">
+              <div className="flex items-start gap-6">
+                <div className="w-16 h-16 bg-white/10 rounded-lg flex items-center justify-center shrink-0 border border-white/10">
+                  <span className="material-symbols-outlined text-primary-container text-4xl">history_edu</span>
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-[family-name:var(--font-headline)] text-2xl font-bold text-on-surface">Secondary School Leaving Certificate (SSLC)</h3>
+                  <p className="text-on-surface-variant text-sm mb-2">Tamil Nadu State Board</p>
+                  <p className="text-tertiary text-sm uppercase tracking-wider mb-4">2019 – 2020</p>
+                  <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary-container/10 border border-primary-container/20 rounded-lg">
+                    <span className="material-symbols-outlined text-primary-container text-lg">verified</span>
+                    <span className="font-[family-name:var(--font-headline)] font-bold text-primary-container text-lg">96.2%</span>
                   </div>
                 </div>
               </div>
