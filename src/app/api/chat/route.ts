@@ -1,9 +1,13 @@
 import { groq } from "@ai-sdk/groq";
 import { convertToModelMessages, streamText, UIMessage } from "ai";
+import { validateOrigin } from "../validate-origin";
 
 export const maxDuration = 30;
 
 export async function POST(req: Request) {
+  const blocked = validateOrigin(req);
+  if (blocked) return blocked;
+
   const { messages }: { messages: UIMessage[] } = await req.json();
 
   const result = streamText({

@@ -1,11 +1,15 @@
 import Groq from "groq-sdk";
 import { NextResponse } from "next/server";
+import { validateOrigin } from "../validate-origin";
 
 const groq = new Groq({
   apiKey: process.env.GROQ_API_KEY,
 });
 
 export async function POST(req: Request) {
+  const blocked = validateOrigin(req);
+  if (blocked) return blocked;
+
   try {
     const formData = await req.formData();
     const audioFile = formData.get("audio") as File;
