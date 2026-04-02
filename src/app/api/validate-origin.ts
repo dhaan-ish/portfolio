@@ -6,6 +6,8 @@ const ALLOWED_ORIGINS =
     ? ["http://localhost:3000", "http://localhost:3001"]
     : ["https://dhaan-ish.vercel.app"];
 
+const TURNSTILE_VERIFY_URL = "https://challenges.cloudflare.com/turnstile/v0/siteverify";
+
 export async function validateRequest(req: Request): Promise<NextResponse | null> {
   // --- Option 1: Origin check ---
   const origin = req.headers.get("origin");
@@ -19,10 +21,26 @@ export async function validateRequest(req: Request): Promise<NextResponse | null
     return NextResponse.json({ error: "Forbidden: invalid origin" }, { status: 403 });
   }
 
-  // --- Option 2: Secret header ---
-  const internalKey = req.headers.get("x-internal-key");
-  if (internalKey !== process.env.INTERNAL_KEY) {
-    return NextResponse.json({ error: "Forbidden: invalid key" }, { status: 403 });
+  // --- Option 2: Cloudflare Turnstile verification (skip in dev) ---
+  if (process.env.NODE_ENV !== "development") {
+    const turnstileToken = req.headers.get("x-turnstile-token");
+    if (!turnstileToken) {
+      return NextResponse.json({ error: "Forbidden: missing turnstile token" }, { status: 403 });
+    }
+
+    const turnstileRes = await fetch(TURNSTILE_VERIFY_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        secret: process.env.TURNSTILE_SECRET_KEY,
+        response: turnstileToken,
+      }),
+    });
+
+    const turnstileData = await turnstileRes.json();
+    if (!turnstileData.success) {
+      return NextResponse.json({ error: "Forbidden: turnstile verification failed" }, { status: 403 });
+    }
   }
 
   // --- Option 3: CSRF double-submit + SameSite cookie ---

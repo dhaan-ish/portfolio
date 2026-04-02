@@ -33,6 +33,8 @@ export default function ChatPage() {
   const streamRef = useRef<MediaStream | null>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
   const csrfTokenRef = useRef<string>("");
+  const turnstileTokenRef = useRef<string>("");
+  const turnstileWidgetRef = useRef<HTMLDivElement>(null);
 
   // Fetch CSRF token on mount
   useEffect(() => {
@@ -44,16 +46,41 @@ export default function ChatPage() {
       .catch(console.error);
   }, []);
 
-  const securityHeaders: Record<string, string> = {
-    "x-internal-key": process.env.NEXT_PUBLIC_INTERNAL_KEY || "",
-  };
+  // Load Cloudflare Turnstile
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onTurnstileLoad";
+    script.async = true;
+
+    (window as unknown as Record<string, unknown>).onTurnstileLoad = () => {
+      const turnstile = (window as unknown as Record<string, { render: (el: HTMLElement, opts: Record<string, unknown>) => void }>).turnstile;
+      if (turnstile && turnstileWidgetRef.current) {
+        turnstile.render(turnstileWidgetRef.current, {
+          sitekey: process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || "",
+          callback: (token: string) => {
+            turnstileTokenRef.current = token;
+          },
+          "expired-callback": () => {
+            turnstileTokenRef.current = "";
+          },
+          appearance: "interaction-only",
+        });
+      }
+    };
+
+    document.head.appendChild(script);
+    return () => {
+      script.remove();
+      delete (window as unknown as Record<string, unknown>).onTurnstileLoad;
+    };
+  }, []);
 
   const { messages, sendMessage, status, setMessages } = useChat({
     transport: new DefaultChatTransport({
       api: "/api/chat",
       headers: () => ({
-        ...securityHeaders,
         "x-csrf-token": csrfTokenRef.current,
+        "x-turnstile-token": turnstileTokenRef.current,
       }),
     }),
     messages: [
@@ -130,8 +157,8 @@ export default function ChatPage() {
       const response = await fetch("/api/speech", {
         method: "POST",
         headers: {
-          "x-internal-key": process.env.NEXT_PUBLIC_INTERNAL_KEY || "",
           "x-csrf-token": csrfTokenRef.current,
+          "x-turnstile-token": turnstileTokenRef.current,
         },
         body: formData,
       });
@@ -242,6 +269,7 @@ export default function ChatPage() {
 
   return (
     <>
+      <div ref={turnstileWidgetRef} className="fixed bottom-4 right-4 z-50" />
       <div className="grid-overlay" />
       <div className="flex h-screen overflow-hidden pt-[73px]">
       {/* Left Sidebar */}
