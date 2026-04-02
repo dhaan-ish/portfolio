@@ -1,13 +1,13 @@
 import Groq from "groq-sdk";
 import { NextResponse } from "next/server";
-import { validateOrigin } from "../validate-origin";
+import { validateRequest } from "../validate-origin";
 
 const groq = new Groq({
   apiKey: process.env.GROQ_API_KEY,
 });
 
 export async function POST(req: Request) {
-  const blocked = validateOrigin(req);
+  const blocked = await validateRequest(req);
   if (blocked) return blocked;
 
   try {

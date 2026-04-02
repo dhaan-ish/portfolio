@@ -32,10 +32,29 @@ export default function ChatPage() {
   const lastSoundTimeRef = useRef<number>(Date.now());
   const streamRef = useRef<MediaStream | null>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
+  const csrfTokenRef = useRef<string>("");
+
+  // Fetch CSRF token on mount
+  useEffect(() => {
+    fetch("/api/csrf")
+      .then((res) => res.json())
+      .then((data) => {
+        csrfTokenRef.current = data.csrfToken;
+      })
+      .catch(console.error);
+  }, []);
+
+  const securityHeaders: Record<string, string> = {
+    "x-internal-key": process.env.NEXT_PUBLIC_INTERNAL_KEY || "",
+  };
 
   const { messages, sendMessage, status, setMessages } = useChat({
     transport: new DefaultChatTransport({
       api: "/api/chat",
+      headers: () => ({
+        ...securityHeaders,
+        "x-csrf-token": csrfTokenRef.current,
+      }),
     }),
     messages: [
       {
@@ -110,6 +129,10 @@ export default function ChatPage() {
 
       const response = await fetch("/api/speech", {
         method: "POST",
+        headers: {
+          "x-internal-key": process.env.NEXT_PUBLIC_INTERNAL_KEY || "",
+          "x-csrf-token": csrfTokenRef.current,
+        },
         body: formData,
       });
 
