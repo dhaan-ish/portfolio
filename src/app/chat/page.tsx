@@ -2,7 +2,7 @@
 
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -19,6 +19,19 @@ export default function ChatPage() {
   const [input, setInput] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
+
+  // Audio recording state
+  const [isRecording, setIsRecording] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [audioLevels, setAudioLevels] = useState<number[]>(new Array(20).fill(0));
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
+  const analyserRef = useRef<AnalyserNode | null>(null);
+  const animationFrameRef = useRef<number | null>(null);
+  const silenceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const lastSoundTimeRef = useRef<number>(Date.now());
+  const streamRef = useRef<MediaStream | null>(null);
+  const audioContextRef = useRef<AudioContext | null>(null);
 
   const { messages, sendMessage, status, setMessages } = useChat({
     transport: new DefaultChatTransport({
@@ -41,15 +54,167 @@ export default function ChatPage() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isLoading]);
 
-  const handleSend = (text: string) => {
+  const handleSend = useCallback((text: string) => {
     if (!text.trim()) return;
     sendMessage({ text });
     setInput("");
-  };
+  }, [sendMessage]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     handleSend(input);
+  };
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
+      if (silenceTimeoutRef.current) {
+        clearTimeout(silenceTimeoutRef.current);
+      }
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach(track => track.stop());
+      }
+      if (audioContextRef.current) {
+        audioContextRef.current.close();
+      }
+    };
+  }, []);
+
+  const stopRecording = useCallback(async () => {
+    if (mediaRecorderRef.current && isRecording) {
+      mediaRecorderRef.current.stop();
+      setIsRecording(false);
+      
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
+      if (silenceTimeoutRef.current) {
+        clearTimeout(silenceTimeoutRef.current);
+      }
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach(track => track.stop());
+      }
+      
+      setAudioLevels(new Array(20).fill(0));
+    }
+  }, [isRecording]);
+
+  const processAudio = useCallback(async (audioBlob: Blob) => {
+    setIsProcessing(true);
+    try {
+      const formData = new FormData();
+      formData.append("audio", audioBlob, "recording.webm");
+
+      const response = await fetch("/api/speech", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to transcribe audio");
+      }
+
+      const data = await response.json();
+      if (data.text && data.text.trim()) {
+        handleSend(data.text);
+      }
+    } catch (error) {
+      console.error("Error processing audio:", error);
+    } finally {
+      setIsProcessing(false);
+    }
+  }, [handleSend]);
+
+  const startRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      streamRef.current = stream;
+
+      // Set up audio analysis for waveform
+      const audioContext = new AudioContext();
+      audioContextRef.current = audioContext;
+      const source = audioContext.createMediaStreamSource(stream);
+      const analyser = audioContext.createAnalyser();
+      analyser.fftSize = 64;
+      source.connect(analyser);
+      analyserRef.current = analyser;
+
+      // Set up MediaRecorder
+      const mediaRecorder = new MediaRecorder(stream, {
+        mimeType: MediaRecorder.isTypeSupported("audio/webm") ? "audio/webm" : "audio/mp4",
+      });
+      mediaRecorderRef.current = mediaRecorder;
+      audioChunksRef.current = [];
+
+      mediaRecorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          audioChunksRef.current.push(event.data);
+        }
+      };
+
+      mediaRecorder.onstop = () => {
+        const audioBlob = new Blob(audioChunksRef.current, { type: "audio/webm" });
+        if (audioBlob.size > 0) {
+          processAudio(audioBlob);
+        }
+        if (audioContextRef.current) {
+          audioContextRef.current.close();
+          audioContextRef.current = null;
+        }
+      };
+
+      mediaRecorder.start(100);
+      setIsRecording(true);
+      lastSoundTimeRef.current = Date.now();
+
+      // Animate waveform and detect silence
+      const updateWaveform = () => {
+        if (!analyserRef.current) return;
+
+        const dataArray = new Uint8Array(analyserRef.current.frequencyBinCount);
+        analyserRef.current.getByteFrequencyData(dataArray);
+
+        // Calculate average volume
+        const average = dataArray.reduce((a, b) => a + b, 0) / dataArray.length;
+        
+        // Check for silence (threshold ~10)
+        if (average > 10) {
+          lastSoundTimeRef.current = Date.now();
+        } else {
+          // Check if silent for 3 seconds
+          if (Date.now() - lastSoundTimeRef.current > 3000) {
+            stopRecording();
+            return;
+          }
+        }
+
+        // Update visualization with 20 bars
+        const levels = [];
+        const step = Math.floor(dataArray.length / 20);
+        for (let i = 0; i < 20; i++) {
+          const value = dataArray[i * step] || 0;
+          levels.push(value / 255);
+        }
+        setAudioLevels(levels);
+
+        animationFrameRef.current = requestAnimationFrame(updateWaveform);
+      };
+
+      updateWaveform();
+    } catch (error) {
+      console.error("Error accessing microphone:", error);
+    }
+  };
+
+  const handleMicClick = () => {
+    if (isRecording) {
+      stopRecording();
+    } else {
+      startRecording();
+    }
   };
 
   return (
@@ -193,6 +358,49 @@ export default function ChatPage() {
                 </button>
               ))}
             </div>
+
+            {/* Recording Waveform Overlay */}
+            {(isRecording || isProcessing) && (
+              <div className="mb-4 p-4 bg-surface-container rounded-lg border border-primary/30 shadow-[0_0_20px_rgba(0,212,255,0.1)]">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <div className={`w-3 h-3 rounded-full ${isProcessing ? "bg-yellow-500" : "bg-red-500"} animate-pulse`} />
+                    <span className="text-xs font-bold text-primary uppercase tracking-wider">
+                      {isProcessing ? "Processing..." : "Recording..."}
+                    </span>
+                  </div>
+                  {isRecording && (
+                    <span className="text-[10px] text-on-surface-variant">
+                      Silence for 3s to auto-stop
+                    </span>
+                  )}
+                </div>
+                
+                {/* Waveform Visualization */}
+                <div className="flex items-center justify-center gap-1 h-16">
+                  {audioLevels.map((level, i) => (
+                    <div
+                      key={i}
+                      className="w-1.5 bg-gradient-to-t from-primary to-tertiary rounded-full transition-all duration-75"
+                      style={{
+                        height: `${Math.max(4, level * 64)}px`,
+                        opacity: isProcessing ? 0.3 : 0.6 + level * 0.4,
+                      }}
+                    />
+                  ))}
+                </div>
+
+                {isRecording && (
+                  <button
+                    onClick={stopRecording}
+                    className="mt-3 w-full py-2 bg-red-500/20 text-red-400 border border-red-500/30 rounded-lg text-xs font-bold uppercase tracking-wider hover:bg-red-500/30 transition-all"
+                  >
+                    Stop Recording
+                  </button>
+                )}
+              </div>
+            )}
+
             <form
               onSubmit={handleSubmit}
               className="relative group"
@@ -201,16 +409,31 @@ export default function ChatPage() {
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder="Type your command or question..."
-                className="w-full bg-surface-container py-4 pl-6 pr-24 rounded-lg border-b-2 border-outline-variant/20 focus:border-primary focus:ring-0 transition-all text-sm placeholder-on-surface-variant/40 outline-none"
+                placeholder={isRecording ? "Recording..." : "Type your command or question..."}
+                disabled={isRecording || isProcessing}
+                className="w-full bg-surface-container py-4 pl-6 pr-24 rounded-lg border-b-2 border-outline-variant/20 focus:border-primary focus:ring-0 transition-all text-sm placeholder-on-surface-variant/40 outline-none disabled:opacity-50"
               />
               <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-3">
-                <button type="button" className="text-on-surface-variant hover:text-primary transition-colors">
-                  <span className="material-symbols-outlined text-xl">mic</span>
+                <button 
+                  type="button" 
+                  onClick={handleMicClick}
+                  disabled={isProcessing}
+                  className={`transition-all ${
+                    isRecording 
+                      ? "text-red-500 animate-pulse" 
+                      : isProcessing
+                        ? "text-yellow-500"
+                        : "text-on-surface-variant hover:text-primary"
+                  }`}
+                >
+                  <span className="material-symbols-outlined text-xl">
+                    {isRecording ? "stop_circle" : isProcessing ? "hourglass_empty" : "mic"}
+                  </span>
                 </button>
                 <button
                   type="submit"
-                  className="bg-primary-container text-on-primary font-bold p-2 rounded hover:shadow-[0_0_15px_rgba(0,212,255,0.4)] transition-all"
+                  disabled={isRecording || isProcessing}
+                  className="bg-primary-container text-on-primary font-bold p-2 rounded hover:shadow-[0_0_15px_rgba(0,212,255,0.4)] transition-all disabled:opacity-50"
                 >
                   <span className="material-symbols-outlined text-xl">send</span>
                 </button>
